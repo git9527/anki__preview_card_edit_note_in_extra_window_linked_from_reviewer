@@ -56,11 +56,12 @@ class MyDialog(QDialog):
         mainLayout.setSpacing(0)
         self.mw = mw
         self.nid = nid
+        self.setMinimumHeight(400)
+        self.setMinimumWidth(250)
         self.setLayout(mainLayout)
         restoreGeom(self, "anki__standalone_preview_for_card_linkable")
         self.web = AnkiWebView(self)
         self.web.title = "Anki card preview"
-        self.web.contextMenuEvent = self.contextMenuEvent
         mainLayout.addWidget(self.web)
 
         blayout = QHBoxLayout()
@@ -99,7 +100,8 @@ class MyDialog(QDialog):
             "{}({},'{}');window.scrollTo(0, 0);".format("_showAnswer", json.dumps(txt), bodyclass))
     
     def onEdit(self):
-        d = MyEditNote(self.mw, self.nid)
+        note = self.mw.col.getNote(self.nid)
+        d = MyEditNote(self.mw, note)
         d.show()
         QDialog.reject(self)
     
@@ -109,7 +111,6 @@ class MyDialog(QDialog):
         browser.form.searchEdit.lineEdit().setText(query)
         browser.onSearchActivated()
 
-
     def onReject(self):
         saveGeom(self, "anki__standalone_preview_for_card_linkable")
         QDialog.reject(self)
@@ -118,8 +119,7 @@ class MyDialog(QDialog):
         saveGeom(self, "anki__standalone_preview_for_card_linkable")
 
 
-def external_card_dialog(self, cid):  # self=reviewer
-    c = self.mw.col.getCard(cid)
+def external_card_dialog(self, c):  # self=reviewer
     bodyclass = bodyClass(self.mw.col, c)
     questionAudio = []
     txt = c.a()
@@ -164,10 +164,20 @@ Reviewer._mungeQA = wrap(Reviewer._mungeQA, onMungeQA, "around")
 def myLinkHandler(self, url, _old):
     if url.startswith(pycmd_card):
         cid = url.lstrip(pycmd_card)[1:]  # remove ":"
-        external_card_dialog(self, int(cid))
+        try:
+            card = self.mw.col.getCard(int(cid))
+        except:
+            tooltip('card with cid "s" does not exist. Aborting ...' % str(cid))
+        else:
+            external_card_dialog(self, card)
     elif gc("edit note externally, dangerous") and url.startswith(pycmd_nid):
         nid = url.lstrip(pycmd_nid)[1:]  # remove ":"
-        external_note_dialog(self, int(nid))
+        try:
+            note = self.mw.col.getNote(int(nid))
+        except:
+            tooltip('Note with nid "%s" does not exist. Aborting ...' % str(nid))
+        else:
+            external_note_dialog(self, note)
     else:
         return _old(self, url)
 Reviewer._linkHandler = wrap(Reviewer._linkHandler, myLinkHandler, "around")

@@ -72,11 +72,10 @@ class MyEditor(aqt.editor.Editor):
 
 class MyEditNote(QDialog):
 
-    def __init__(self, mw, nid):
+    def __init__(self, mw, note):
         QDialog.__init__(self, None, Qt.Window)
         mw.setupDialogGC(self)
         self.mw = mw
-        self.nid = nid
         self.form = aqt.forms.editcurrent.Ui_Dialog()
         self.form.setupUi(self)
         self.setWindowTitle(_("Anki: Edit underlying note (add-on window)"))
@@ -88,7 +87,6 @@ class MyEditNote(QDialog):
             self.editor = MyEditor(self.mw, self.form.fieldsArea, self)
         else:
             self.editor = aqt.editor.Editor(self.mw, self.form.fieldsArea, self)
-        note = self.mw.col.getNote(nid)
         self.editor.setNote(note, focusTo=0)
         restoreGeom(self, "note_edit")
         # addHook("reset", self.onReset)
