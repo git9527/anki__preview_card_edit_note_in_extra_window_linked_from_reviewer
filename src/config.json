@@ -1,4 +1,5 @@
 {
-    "edit note externally, dangerous": false,
-    "when editing note externally - no reset, which is really dangerous": false
+    "edit note externally": true,
+    "when editing note externally - no reset": true,
+    "linked_cards_show_answer": true
 } 

@@ -1,11 +1,26 @@
-When you add <code>cid:1234567890123</code> (card id) or <code>nid:1234567890123</code> (note id) to a card or template this add-ons transforms the text to a clickable hyperlink. When you click it a preview of the card will open in an extra window or the note will be shown in an extra editor window. The latter is experimental, might damage your note and needs to be enabled from the add-on options.
+When you add <code>cidd1234567890123</code> (card id) or <code>nidd1234567890123</code> (note id) to a card or template this add-ons transforms the text to a clickable hyperlink. When you click it a preview of the card will open in an extra window or the note will be shown in an extra editor window. The latter option works for me so far but since it actually modifies a note it could in theory damage this note. You should be careful with very young add-ons without any ratings .... When you use such add-ons make sure to have backups and know how to restore them. 
 
-For details about cids/nids see e.g. <a href="https://apps.ankiweb.net/docs/manual.html#searching" rel="nofollow"></a>.
+This add-on also adds an entry to the browsre table context menu to copy the card id.
+
+For details about cids/nids see e.g. <a href="https://apps.ankiweb.net/docs/manual.html#searching" rel="nofollow">the end of this section from the manual</a>.
 
 As always use it at your own risk.
+
+<b># mobile, ankimobile, ankidroid, ankiweb</b>
+Add-ons only work on Windows, Mac, Linux. So on mobile you need a different solution. I use an Android phone and Ankidroid. I added some javascript to my back template that attaches all linked cards/notes at the bottom of my note on mobile, see 
+<a href="https://raw.githubusercontent.com/ijgnd/anki__preview_card_edit_note_in_extra_window_linked_from_reviewer/master/src/template_back_with_iframe_for_ankidroid.html" rel="nofollow">here</a>
+
+The review view (webview) can't access your database. It can only read media from your collection.media folder. This add-on adds an option to the main menu to export all linked cards/notes to the media folder so that my js function can read them from there. 
+
+This solution for Ankidroid uses iframes and won't work on ankiweb and probably doesn't work on ankimobile. You would have to adjust the solution your back template for these platforms.
+
 
 <b># bugs etc.</b>
 Please do not use reviews for bug reports or support requests. I don't get notified of your reviews, and properly troubleshooting an issue through them is nearly impossible (formatting is limited and I can't reply multiple times). If you find a bug let me know on <a href="https://github.com/ijgnd/anki__preview_card_edit_note_in_extra_window_linked_from_reviewer/issues" rel="nofollow">github</a> or via reddit (/u/ijgnord). Maybe I'll have an idea ...
 
+<img src="https://raw.githubusercontent.com/ijgnd/anki__preview_card_edit_note_in_extra_window_linked_from_reviewer/master/screenshots/preview_marked.png"> 
+
+<img src="https://raw.githubusercontent.com/ijgnd/anki__preview_card_edit_note_in_extra_window_linked_from_reviewer/master/screenshots/extra_preview_edit_window.gif"> 
+
 <b># alternatives </b>
-Maybe <a href="https://ankiweb.net/shared/info/930944997" rel="nofollow">Modified reviewer context menu search with browser search</a>, maybe with <a href="https://ankiweb.net/shared/info/1819291495" rel="nofollow">Browser Maximize/Hide Table/Editor</a>. For details see <a href="https://ankiweb.net/shared/info/1819291495" rel="nofollow">here</a>.
+Maybe <a href="https://ankiweb.net/shared/info/930944997" rel="nofollow">Modified reviewer context menu search with browser search</a>, maybe with <a href="https://ankiweb.net/shared/info/1819291495" rel="nofollow">Browser Maximize/Hide Table/Editor</a>. For details see <a href="https://github.com/ijgnd/anki__preview_card_edit_note_in_extra_window_linked_from_reviewer/blob/master/readme.md#alternatives" rel="nofollow">here</a>.
