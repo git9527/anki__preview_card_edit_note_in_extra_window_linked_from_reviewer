@@ -1,0 +1,32 @@
+{{FrontSide}}
+<hr id=answer>
+{{Back}}
+
+
+<script>
+    function onlyUnique(value, index, self) { 
+        return self.indexOf(value) === index;
+    }
+    
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        var cont = document.documentElement.innerHTML;
+        var matches = cont.match(/cidd\d{13}/g);
+        var unique = matches.filter(onlyUnique); // multiple references to same note
+        if (unique.length > 0) {
+            $('body').append(`<div><br><br><br><br><br><hr><br></div>`);
+        }
+        for (var i = 0; i < unique.length; i++) {
+            var filename = "_card" + unique[i].substr(4) + ".html";
+            $('body').append($('<div>').load(filename));
+        }
+    
+        cont = document.documentElement.innerHTML;
+        matches = cont.match(/nidd\d{13}/g);
+        var unique = matches.filter(onlyUnique); // multiple references to same note
+        for (var i = 0; i < unique.length; i++) {
+            filename = "_note" + unique[i].substr(4) + ".html";
+            $('body').append($('<div>').load(filename));
+        }    
+    
+    }
+</script>
