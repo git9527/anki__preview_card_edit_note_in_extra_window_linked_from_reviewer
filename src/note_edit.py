@@ -92,6 +92,7 @@ class MyEditNote(QDialog):
         # addHook("reset", self.onReset)
         # self.mw.requireReset()
         self.show()
+        self.activateWindow()
         # reset focus after open, taking care not to retain webview
         # pylint: disable=unnecessary-lambda
         self.mw.progress.timer(100, lambda: self.editor.web.setFocus(), False)

@@ -14,33 +14,39 @@ from aqt.utils import (
     tooltip
 )
 
-from .card_window import CardPreviewWindow
+from .card_window import MyCardPreviewWindow, CardPreviewWindowClass
 from .config import gc
 from .note_edit import MyEditNote
 
 
-def external_card_dialog(self, c):  # self=reviewer
-    bodyclass = bodyClass(self.mw.col, c)
-    questionAudio = []
-    if gc("linked_cards_show_answer", True):
-        txt = c.a()
-    else:
-        txt = c.q()
-    txt = re.sub(r"\[\[type:[^]]+\]\]", "", txt)
-    clearAudioQueue()
-    if self.autoplay(c):
-        # if we're showing both sides at once, play question audio first
-        for audio in questionAudio:
-            play(audio)
-        # then play any audio that hasn't already been played
-        for audio in allSounds(txt):
-            if audio not in questionAudio:
+def external_card_dialog(self, card):  # self=reviewer
+    """
+    # this code is for my first version that used less code from the browser preview functions
+    # so that I had to do the preprocessing of the card here. 
+        c = card
+        bodyclass = bodyClass(self.mw.col, c)
+        questionAudio = []
+        if gc("linked_cards_show_answer", True):
+            txt = c.a()
+        else:
+            txt = c.q()
+        txt = re.sub(r"\[\[type:[^]]+\]\]", "", txt)
+        clearAudioQueue()
+        if self.autoplay(c):
+            # if we're showing both sides at once, play question audio first
+            for audio in questionAudio:
                 play(audio)
-    txt = mungeQA(self.mw.col, txt)
-    side = "answer" if gc("linked_cards_show_answer", True) else "question"
-    txt = runFilter("prepareQA", txt, c,
-                    "preview"+side.capitalize())
-    d = CardPreviewWindow(self.mw, self.mw, txt, bodyclass, c.nid)
+            # then play any audio that hasn't already been played
+            for audio in allSounds(txt):
+                if audio not in questionAudio:
+                    play(audio)
+        txt = mungeQA(self.mw.col, txt)
+        side = "answer" if gc("linked_cards_show_answer", True) else "question"
+        txt = runFilter("prepareQA", txt, c,
+                        "preview"+side.capitalize())
+        d = MyCardPreviewWindow(self.mw, self.mw, txt, bodyclass, c.nid)
+    """
+    d = CardPreviewWindowClass(self.mw, self.mw, card)
     d.show()
 
 

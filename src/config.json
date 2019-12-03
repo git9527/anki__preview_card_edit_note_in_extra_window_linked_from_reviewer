@@ -1,5 +1,10 @@
 {
+    "card_preview__default_is_answer": true,
+    "card_preview__override_toggle_from_default_for_notetypes": [
+        "IR3"
+    ],
     "edit note externally": true,
-    "when editing note externally - no reset": true,
+    "edit note externally - no reset": true,
     "linked_cards_show_answer": true
+
 } 
