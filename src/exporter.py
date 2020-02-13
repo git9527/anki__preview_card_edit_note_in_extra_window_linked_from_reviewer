@@ -5,12 +5,14 @@ from anki.hooks import (
 )
 from aqt import mw
 from aqt.utils import (
-    mungeQA
+    # mungeQA
+    tooltip,
 )
 from aqt.qt import *
 
 from .config import gc
 from .search import sqlite_regexp
+
 
 def write_to_file(txt, filename):
     with open(filename, "w") as f:
@@ -24,7 +26,8 @@ def text_for_card(cid):
     else:
         txt = c.q()
     txt = re.sub(r"\[\[type:[^]]+\]\]", "", txt)
-    txt = mungeQA(mw.col, txt)
+    #txt = mungeQA(mw.col, txt)  # 2.1.20:  mungeQA() deprecated; use mw.prepare_card_text_for_display()
+    txt = mw.prepare_card_text_for_display(txt)
     side = "answer" if gc("linked_cards_show_answer", True) else "question"
     txt = runFilter("prepareQA", txt, c,
                     "preview"+side.capitalize())
@@ -70,23 +73,18 @@ def createReferencesInMedia():
     # sync seems to remove the function sqlite_regexp - 
     mw.col.db._db.create_function('REGEXP', 2, sqlite_regexp)
     notes_with_cid_refs = mw.col.db.list(sqlstring % "c")
-    # print(notes_with_cid_refs)
     linkedcids = extract_linked_ids_from_field_content(True, notes_with_cid_refs)
-    # print(linkedcids)
     for cid in linkedcids:
         txt = text_for_card(cid)
         filename = "_card" + str(cid) + ".html"
-        write_to_file(txt, filename) 
-
+        write_to_file(txt, filename)
     notes_with_nid_refs = mw.col.db.list(sqlstring % "n")
-    # print(notes_with_nid_refs)
     linked_nids = extract_linked_ids_from_field_content(False, notes_with_nid_refs)
-    # print(linked_nids)
     for nid in linked_nids:
         txt = text_for_note(nid)
         filename = "_note" + str(nid) + ".html"
         write_to_file(txt, filename) 
-
+    tooltip("Exporting finished.")
 
 
 

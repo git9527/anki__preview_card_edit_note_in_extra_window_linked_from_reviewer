@@ -4,9 +4,12 @@
 # Copyright: Ankitects Pty Ltd and contributors
 #            ijgnd
 
+from __future__ import annotations
+
 import json
 import re
 import time
+from typing import Union # Callable, List, Optional
 
 from anki.hooks import runFilter
 from anki.lang import _
@@ -16,93 +19,59 @@ from anki.utils import (
 )
 
 import aqt
+from aqt import mw
+from aqt import gui_hooks
+from aqt.browser import PreviewDialog
+from aqt.qt import *
+from aqt.sound import av_player, play_clicked_audio
+from aqt.theme import theme_manager
 from aqt.utils import (
-    mungeQA,
     restoreGeom,
     saveGeom,
+    tooltip,
 )
-from aqt.qt import *
 from aqt.webview import AnkiWebView
 
 from .config import gc
+from .helpers import pycmd_card, pycmd_nid
 from .note_edit import MyEditNote
- 
 
-class MyCardPreviewWindow(QDialog):
-    def __init__(self, parent, mw, txt, bodyclass, nid):
-        super(CardPreviewWindow, self).__init__(parent)
-        mainLayout = QVBoxLayout()
-        mainLayout.setContentsMargins(0, 0, 0, 0)
-        mainLayout.setSpacing(0)
-        self.mw = mw
-        self.nid = nid
-        self.setMinimumHeight(400)
-        self.setMinimumWidth(250)
-        self.setLayout(mainLayout)
-        restoreGeom(self, "anki__standalone_preview_for_card_linkable")
-        self.web = AnkiWebView(self)
-        self.web.title = "Anki card preview"
-        mainLayout.addWidget(self.web)
 
-        blayout = QHBoxLayout()
-        
-        if gc("edit note externally"):
-            edit = QPushButton("Edit")
-            edit.clicked.connect(self.onEdit)
-            blayout.addWidget(edit)
+# same functions here to circumvent circular imports, TODO
+def external_card_dialog(card):
+    d = CardPreviewWindowClass(mw, mw, card)
+    d.show()
 
-        edit = QPushButton("show in Browser")
-        edit.clicked.connect(self.onBrowser)
-        blayout.addWidget(edit)
-        
-        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)     
-        blayout.addItem(spacerItem)
-        
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel)
-        self.buttonBox.rejected.connect(self.onReject)
-        QMetaObject.connectSlotsByName(self)
-        blayout.addWidget(self.buttonBox)
-        
-        mainLayout.addLayout(blayout)
-        self.exit_shortcut = QShortcut(QKeySequence(Qt.Key_Escape), self)
-        self.exit_shortcut.activated.connect(self.onReject)
 
-        # adjusted from aqt.browser.Browser._setupPreviewWebview
-        jsinc = ["jquery.js","browsersel.js",
-                 "mathjax/conf.js", "mathjax/MathJax.js",
-                 "reviewer.js"]
-        self.web.stdHtml(self.mw.reviewer.revHtml(),
-                                 css=["reviewer.css"],
-                                 js=jsinc)
-        self.web.eval(
-            "{}({},'{}');window.scrollTo(0, 0);".format("_showAnswer", json.dumps(txt), bodyclass))
-    
-    def onEdit(self):
-        note = self.mw.col.getNote(self.nid)
-        d = MyEditNote(self.mw, note)
-        d.show()
-        QDialog.reject(self)
-    
-    def onBrowser(self):
-        browser = aqt.dialogs.open("Browser", self.mw)
-        query = '"nid:' + str(self.nid) + '"'
-        browser.form.searchEdit.lineEdit().setText(query)
-        browser.onSearchActivated()
+def external_note_dialog(nid):
+    d = MyEditNote(mw, nid)
+    d.show()
 
-    def onReject(self):
-        saveGeom(self, "anki__standalone_preview_for_card_linkable")
-        QDialog.reject(self)
 
-    def closeEvent(self, evnt):
-        saveGeom(self, "anki__standalone_preview_for_card_linkable")
-
+def process_urlcmd(url):
+    if url.startswith(pycmd_card):
+        cid = url.lstrip(pycmd_card)
+        try:
+            card = mw.col.getCard(int(cid))
+        except:
+            tooltip('card with cid "%s" does not exist. Aborting ...' % str(cid))
+        else:
+            external_card_dialog(card)
+            return True
+    elif gc("edit note externally") and url.startswith(pycmd_nid):
+        nid = url.lstrip(pycmd_nid)
+        try:
+            note = mw.col.getNote(int(nid))
+        except:
+            tooltip('Note with nid "%s" does not exist. Aborting ...' % str(nid))
+        else:
+            external_note_dialog(note)
+            return True
 
 
 class CardPreviewWindowClass(QDialog):
     _previewTimer = None
-    _lastPreviewRender = 0
+    _lastPreviewRender: Union[int, float] = 0
     _lastPreviewState = None
     _previewCardChanged = False
 
@@ -117,7 +86,7 @@ class CardPreviewWindowClass(QDialog):
         self.finished.connect(self._onPreviewFinished)
         self.silentlyClose = True
         vbox = QVBoxLayout()
-        vbox.setContentsMargins(0,0,0,0)
+        vbox.setContentsMargins(0, 0, 0, 0)
         self._previewWeb = AnkiWebView()
         vbox.addWidget(self._previewWeb)
 
@@ -244,13 +213,21 @@ class CardPreviewWindowClass(QDialog):
 
     def _updatePreviewButtons(self):
         pass
+        # if not self._previewWindow:
+        #     return
         # current = self.currentRow()
-        # canBack = (current > 0 or (current == 0 and self._previewState == "answer"
-        #                            and not self._previewBothSides))
+        # canBack = current > 0 or (
+        #     current == 0
+        #     and self._previewState == "answer"
+        #     and not self._previewBothSides
+        # )
         # self._previewPrev.setEnabled(not not (self.singleCard and canBack))
-        # canForward = self.currentRow() < self.model.rowCount(None) - 1 or \
-        #              self._previewState == "question"
+        # canForward = (
+        #     self.currentRow() < self.model.rowCount(None) - 1
+        #     or self._previewState == "question"
+        # )
         # self._previewNext.setEnabled(not not (self.singleCard and canForward))
+
 
     def _closePreview(self):
         self.close()
@@ -260,12 +237,25 @@ class CardPreviewWindowClass(QDialog):
         self._previewPrev = self._previewNext = None
 
     def _setupPreviewWebview(self):
-        jsinc = ["jquery.js","browsersel.js",
-                 "mathjax/conf.js", "mathjax/MathJax.js",
-                 "reviewer.js"]
-        self._previewWeb.stdHtml(self.mw.reviewer.revHtml(),
-                                 css=["reviewer.css"],
-                                 js=jsinc)
+        jsinc = [
+            "jquery.js",
+            "browsersel.js",
+            "mathjax/conf.js",
+            "mathjax/MathJax.js",
+            "reviewer.js",
+        ]
+        self._previewWeb.stdHtml(
+            self.mw.reviewer.revHtml(), css=["reviewer.css"], js=jsinc
+        )
+        self._previewWeb.set_bridge_command(
+            self._on_preview_bridge_cmd,
+            PreviewDialog(dialog=self, browser=self),
+        )
+
+    def _on_preview_bridge_cmd(self, cmd: str) -> Any:
+        if cmd.startswith("play:"):
+            play_clicked_audio(cmd, self.card)
+        process_urlcmd(cmd)
 
 
     def _renderPreview(self, cardChanged=False):
@@ -309,33 +299,44 @@ class CardPreviewWindowClass(QDialog):
 
             # need to force reload even if answer
             txt = c.q(reload=True)
-            questionAudio = []
-            if self._previewBothSides:
-                questionAudio = allSounds(txt)
             if self._previewState == "answer":
                 func = "_showAnswer"
                 txt = c.a()
             txt = re.sub(r"\[\[type:[^]]+\]\]", "", txt)
 
-            bodyclass = bodyClass(self.mw.col, c)
+            bodyclass = theme_manager.body_classes_for_card_ord(c.ord)
 
-            clearAudioQueue()
             if self.mw.reviewer.autoplay(c):
-                # if we're showing both sides at once, play question audio first
-                for audio in questionAudio:
-                    play(audio)
-                # then play any audio that hasn't already been played
-                for audio in allSounds(txt):
-                    if audio not in questionAudio:
-                        play(audio)
+                if self._previewBothSides:
+                    # if we're showing both sides at once, remove any audio
+                    # from the answer that's appeared on the question already
+                    question_audio = c.question_av_tags()
+                    only_on_answer_audio = [
+                        x for x in c.answer_av_tags() if x not in question_audio
+                    ]
+                    audio = question_audio + only_on_answer_audio
+                elif self._previewState == "question":
+                    audio = c.question_av_tags()
+                else:
+                    audio = c.answer_av_tags()
+                av_player.play_tags(audio)
 
-            txt = mungeQA(self.col, txt)
-            txt = runFilter("prepareQA", txt, c,
-                            "preview"+self._previewState.capitalize())
+            txt = self.mw.prepare_card_text_for_display(txt)
+            #### mod
+            pattern = "(cidd\\d{13})"
+            repl = """<a href='javascript:pycmd("%s\\1");'>\\1</a>""" % pycmd_card
+            txt = re.sub(pattern, repl, txt)
+            if gc("edit note externally"):
+                pattern = "(nidd\\d{13})"
+                repl = """<a href='javascript:pycmd("%s\\1");'>\\1</a>""" % pycmd_nid
+                txt = re.sub(pattern, repl, txt)
+            ####
+            gui_hooks.card_will_show(
+                txt, c, "preview" + self._previewState.capitalize()
+            )
             self._lastPreviewState = self._previewStateAndMod()
         self._updatePreviewButtons()
-        self._previewWeb.eval(
-            "{}({},'{}');".format(func, json.dumps(txt), bodyclass))
+        self._previewWeb.eval("{}({},'{}');".format(func, json.dumps(txt), bodyclass))
         self._previewCardChanged = False
 
     def _onPreviewShowBothSides(self, toggle):
