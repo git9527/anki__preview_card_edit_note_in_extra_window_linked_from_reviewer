@@ -4,7 +4,7 @@
 #     License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 # (this mod is copyright 2019 ijgnd)
 
-
+from aqt import gui_hooks
 from aqt.qt import *
 from aqt.utils import tooltip
 import aqt.editor
@@ -17,11 +17,13 @@ from .config import gc
 
 import urllib
 import unicodedata
+
+
 class MyEditor(aqt.editor.Editor):
 
     # no requireRest
     def onBridgeCmd(self, cmd):
-        if not self.note or not runHook:
+        if not self.note:
             # shutdown
             return
         # focus lost or key/button pressed?
@@ -35,7 +37,7 @@ class MyEditor(aqt.editor.Editor):
             if nid != self.note.id:
                 print("ignored late blur")
                 return
-            txt = urllib.parse.unquote(txt)
+
             txt = unicodedata.normalize("NFC", txt)
             txt = self.mungeHTML(txt)
             # misbehaving apps may include a null byte in the text
@@ -49,21 +51,20 @@ class MyEditor(aqt.editor.Editor):
             if type == "blur":
                 self.currentField = None
                 # run any filters
-                if runFilter(
-                    "editFocusLost", False, self.note, ord):
+                if gui_hooks.editor_did_unfocus_field(False, self.note, ord):
                     # something updated the note; update it after a subsequent focus
                     # event has had time to fire
                     self.mw.progress.timer(100, self.loadNoteKeepingFocus, False)
                 else:
                     self.checkValid()
             else:
-                runHook("editTimer", self.note)
+                gui_hooks.editor_did_fire_typing_timer(self.note)
                 self.checkValid()
         # focused into field?
         elif cmd.startswith("focus"):
             (type, num) = cmd.split(":", 1)
             self.currentField = int(num)
-            runHook("editFocusGained", self.note, self.currentField)
+            gui_hooks.editor_did_focus_field(self.note, self.currentField)
         elif cmd in self._links:
             self._links[cmd](self)
         else:
