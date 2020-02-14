@@ -36,11 +36,15 @@ def text_for_card(cid):
 
 def text_for_note(nid):
     # TODO maybe return special card?
-    note = mw.col.getNote(nid)
-    txt = ""
-    for f in note.fields:
-        txt += f + "<br><br>"
-    return txt
+    try:
+        note = mw.col.getNote(nid)
+    except:
+        return
+    else:
+        txt = ""
+        for f in note.fields:
+            txt += f + "<br><br>"
+        return txt
 
 
 sqlstring = r"""
@@ -56,9 +60,9 @@ WHERE
 def extract_linked_ids_from_field_content(iscid, notelist):
     outlist = []
     if iscid:
-        regex = r'(?<=cidd)(\d{13})'
+        regex = r"""(?<=%s)(\d{13})""" % gc("prefix_cid", "cidd")
     else:
-        regex = r'(?<=nidd)(\d{13})'
+        regex = r"""(?<=%s)(\d{13})""" % gc("prefix_nid", "nidd")
     ro = re.compile(regex)
     for nid in notelist:
         note = mw.col.getNote(nid)
@@ -82,8 +86,9 @@ def createReferencesInMedia():
     linked_nids = extract_linked_ids_from_field_content(False, notes_with_nid_refs)
     for nid in linked_nids:
         txt = text_for_note(nid)
-        filename = "_note" + str(nid) + ".html"
-        write_to_file(txt, filename) 
+        if txt:
+            filename = "_note" + str(nid) + ".html"
+            write_to_file(txt, filename) 
     tooltip("Exporting finished.")
 
 

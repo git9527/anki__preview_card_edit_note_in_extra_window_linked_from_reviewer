@@ -322,16 +322,7 @@ class CardPreviewWindowClass(QDialog):
                 av_player.play_tags(audio)
 
             txt = self.mw.prepare_card_text_for_display(txt)
-            #### mod
-            pattern = "(cidd\\d{13})"
-            repl = """<a href='javascript:pycmd("%s\\1");'>\\1</a>""" % pycmd_card
-            txt = re.sub(pattern, repl, txt)
-            if gc("edit note externally"):
-                pattern = "(nidd\\d{13})"
-                repl = """<a href='javascript:pycmd("%s\\1");'>\\1</a>""" % pycmd_nid
-                txt = re.sub(pattern, repl, txt)
-            ####
-            gui_hooks.card_will_show(
+            txt = gui_hooks.card_will_show(
                 txt, c, "preview" + self._previewState.capitalize()
             )
             self._lastPreviewState = self._previewStateAndMod()
