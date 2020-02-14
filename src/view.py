@@ -27,6 +27,15 @@ def contexthelper(view, menu, selectedtext):
     if re.match(r"%s\d{13}" % gc("prefix_cid", "cidd"), selectedtext):
         a = menu.addAction('open card in external window')
         a.triggered.connect(lambda _, s=selectedtext: process_selectedtext(s, True))
+    if re.match(r"\d{13}", selectedtext):
+        o = mw.col.findCards("cid:" + selectedtext, False)
+        if len(o) == 1:
+            a = menu.addAction('open card in external window')
+            a.triggered.connect(lambda _, s=selectedtext: process_selectedtext(s, True))
+        o = mw.col.findNotes("nid:" + selectedtext)
+        if len(o) == 1:
+            a = menu.addAction('open note in external window')
+            a.triggered.connect(lambda _, s=selectedtext: process_selectedtext(s, False))
 
 
 def EditorContextMenu(view, menu):
