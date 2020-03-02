@@ -9,5 +9,6 @@
     "prefix_nid": "nidd",
     "prefix_cid": "cidd",
     "context menu entries in reviewer": true,
-    "context menu entries in editor": true   
+    "context menu entries in editor": true,
+    "editor context menu in browser show cid/nid copy entries": true  
 } 
