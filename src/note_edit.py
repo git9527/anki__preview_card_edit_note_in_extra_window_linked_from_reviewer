@@ -84,7 +84,7 @@ class MyEditNote(QDialog):
         self.setMinimumWidth(250)
         self.form.buttonBox.button(QDialogButtonBox.Close).setShortcut(
                 QKeySequence("Ctrl+Return"))
-        if gc("when editing note externally - no reset"):
+        if False: # gc("when editing note externally - no reset"):
             self.editor = MyEditor(self.mw, self.form.fieldsArea, self)
         else:
             self.editor = aqt.editor.Editor(self.mw, self.form.fieldsArea, self)
