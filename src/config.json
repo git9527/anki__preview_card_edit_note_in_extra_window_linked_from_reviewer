@@ -4,6 +4,7 @@
         "IR3"
     ],
     "edit note externally": true,
+    "browser_table_add_prefix_when_copying": true,
     "linked_cards_show_answer": true,
     "make nid cid clickable": true,
     "prefix_nid": "nidd",

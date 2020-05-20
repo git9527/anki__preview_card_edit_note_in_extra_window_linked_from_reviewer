@@ -6,11 +6,17 @@ from .config import gc
 
 
 def nidcopy(browser):
-    QApplication.clipboard().setText(str(browser.card.nid))
+    prefix = ""
+    if gc("browser_table_add_prefix_when_copying", True):
+        prefix += gc("prefix_nid", "nidd")
+    QApplication.clipboard().setText(prefix + str(browser.card.nid))
 
 
 def cidcopy(browser):
-    QApplication.clipboard().setText(str(browser.card.id))
+    prefix = ""
+    if gc("browser_table_add_prefix_when_copying", True):
+        prefix += gc("prefix_cid", "cidd")
+    QApplication.clipboard().setText(prefix + str(browser.card.id))
 
 
 def add_to_table_context_menu(browser, menu):
@@ -30,7 +36,6 @@ def add_to_context(view, menu):
     if gc("editor context menu in browser show cid/nid copy entries"):
         browser = view.editor.parentWindow
         if not isinstance(browser, Browser):
-            print('not in browser')
             return
         a = menu.addAction("Copy cid")
         a.triggered.connect(lambda _, b=browser: cidcopy(b))

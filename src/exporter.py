@@ -11,7 +11,6 @@ from aqt.utils import (
 from aqt.qt import *
 
 from .config import gc
-from .search import sqlite_regexp
 
 
 def write_to_file(txt, filename):
@@ -74,8 +73,6 @@ def extract_linked_ids_from_field_content(iscid, notelist):
 
 
 def createReferencesInMedia():
-    # sync seems to remove the function sqlite_regexp - 
-    mw.col.db._db.create_function('REGEXP', 2, sqlite_regexp)
     notes_with_cid_refs = mw.col.db.list(sqlstring % "c")
     linkedcids = extract_linked_ids_from_field_content(True, notes_with_cid_refs)
     for cid in linkedcids:

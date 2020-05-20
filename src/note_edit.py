@@ -8,6 +8,7 @@ from aqt import gui_hooks
 from aqt.qt import *
 from aqt.utils import tooltip
 import aqt.editor
+from aqt import mw
 from aqt.utils import saveGeom, restoreGeom
 from anki.hooks import addHook, remHook, runHook, runFilter
 from anki.utils import isMac
@@ -126,3 +127,7 @@ class MyEditNote(QDialog):
             onsuccess()
         self.editor.saveNow(callback)
  
+
+def external_note_dialog(nid):
+    d = MyEditNote(mw, nid)
+    d.show()
