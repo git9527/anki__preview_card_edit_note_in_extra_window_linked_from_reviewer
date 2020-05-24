@@ -5,6 +5,7 @@ from .config import gc, pycmd_card, pycmd_nid
 
 
 def process_urlcmd(url, external_card_dialog, external_note_dialog):
+    # print(f"in process_urlcmd, pycmd_nid is {pycmd_nid} and url is {url}")
     if url.startswith(pycmd_card):
         cid = url.lstrip(pycmd_card)
         try:

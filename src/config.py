@@ -9,5 +9,5 @@ def gc(arg, fail=False):
         return fail
 
 
-pycmd_card = "card_in_extra_window"
-pycmd_nid = "note_in_extra_window"
+pycmd_card = gc("prefix_cid")  # "card_in_extra_window"
+pycmd_nid = gc("prefix_nid")  # "note_in_extra_window"

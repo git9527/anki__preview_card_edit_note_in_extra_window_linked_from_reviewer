@@ -22,3 +22,4 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from . import browser
 from . import view
 from . import exporter
+from . import editor

@@ -4,6 +4,7 @@ from anki.hooks import addHook, wrap
 from aqt import gui_hooks
 from aqt import mw
 from aqt.browser import Browser
+from aqt.editor import Editor
 from aqt.previewer import Previewer
 from aqt.reviewer import Reviewer
 from aqt.utils import tooltip
@@ -21,6 +22,7 @@ def myLinkHandler(self, url, _old):
         return _old(self, url)
 Reviewer._linkHandler = wrap(Reviewer._linkHandler, myLinkHandler, "around")
 Previewer._on_bridge_cmd = wrap(Previewer._on_bridge_cmd, myLinkHandler, "around")
+Editor.onBridgeCmd = wrap(Editor.onBridgeCmd, myLinkHandler, "around")
 
 
 def contexthelper(view, menu, selectedtext):
