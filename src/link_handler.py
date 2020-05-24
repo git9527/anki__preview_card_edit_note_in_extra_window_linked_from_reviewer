@@ -1,3 +1,4 @@
+import aqt
 from aqt import mw
 from aqt.utils import tooltip
 
@@ -15,13 +16,19 @@ def process_urlcmd(url, external_card_dialog, external_note_dialog):
         else:
             external_card_dialog(card)
             return True
-    elif gc("edit note externally") and url.startswith(pycmd_nid):
+    elif url.startswith(pycmd_nid):
         nid = url.lstrip(pycmd_nid)
         try:
             note = mw.col.getNote(int(nid))
         except:
             tooltip('Note with nid "%s" does not exist. Aborting ...' % str(nid))
         else:
-            external_note_dialog(note)
+            if gc("edit note externally"):
+                external_note_dialog(note)
+            else:
+                browser = aqt.dialogs.open("Browser", mw)
+                browser.form.searchEdit.lineEdit().setText("nid:{}".format(note.id))
+                browser.onSearchActivated()
+                browser.form.tableView.selectRow(0)
             return True
     return False 
