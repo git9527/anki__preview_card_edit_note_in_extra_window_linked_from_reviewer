@@ -5,6 +5,8 @@ from .config import gc
 
 
 def append_js_to_Editor(web_content, context):
+    if not gc("editor double click to open nidd/cidd"):
+        return
     if not isinstance(context, Editor):
         return    
     script_str = """
