@@ -72,7 +72,7 @@ class MyEditor(aqt.editor.Editor):
             print("uncaught cmd", cmd)
 
 
-class MyEditNote(QDialog):
+class EditNoteWindowFromThisLinkAddon(QDialog):
 
     def __init__(self, mw, note):
         QDialog.__init__(self, None, Qt.Window)
@@ -129,5 +129,5 @@ class MyEditNote(QDialog):
  
 
 def external_note_dialog(nid):
-    d = MyEditNote(mw, nid)
+    d = EditNoteWindowFromThisLinkAddon(mw, nid)
     d.show()

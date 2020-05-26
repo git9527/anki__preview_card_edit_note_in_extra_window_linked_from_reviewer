@@ -11,6 +11,11 @@
     "prefix_cid": "cidd",
     "context menu entries in reviewer": true,
     "context menu entries in editor": true,
-    "editor context menu in browser show cid/nid copy entries": true,
+    "editor context menu show cid/nid copy entries in": [
+        "AddCards",
+        "Browser",
+        "EditCurrent",
+        "EditNoteWindowFromThisLinkAddon"
+    ],
     "editor double click to open nidd/cidd": true
 } 

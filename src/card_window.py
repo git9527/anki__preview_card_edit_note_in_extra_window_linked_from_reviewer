@@ -15,7 +15,7 @@ from aqt.utils import tooltip
 
 from .config import gc
 from .link_handler import process_urlcmd
-from .note_edit import external_note_dialog, MyEditNote
+from .note_edit import external_note_dialog, EditNoteWindowFromThisLinkAddon
 
 
 
@@ -79,7 +79,7 @@ class SingleCardPreviewerMod(SingleCardPreviewer):
 
     def _on_edit_button(self):
         note = self.mw.col.getNote(self.card().nid)
-        d = MyEditNote(self.mw, note)
+        d = EditNoteWindowFromThisLinkAddon(self.mw, note)
         d.show()
         QDialog.reject(self)
 

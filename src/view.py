@@ -1,6 +1,6 @@
 import re
 
-from anki.hooks import addHook, wrap
+from anki.hooks import wrap
 from aqt import gui_hooks
 from aqt import mw
 from aqt.browser import Browser
@@ -104,12 +104,17 @@ def nid_cid_to_hyperlink(text, card, kind):
         return text
 
 
+alreadyloaded = False
 def on_profile_loaded():
+    global alreadyloaded
+    if alreadyloaded:
+        return
+    alreadyloaded = True
     """user config only available when profile is loaded"""
     if gc('context menu entries in reviewer', True):
-        addHook("AnkiWebView.contextMenuEvent", ReviewerContextMenu)
+        gui_hooks.webview_will_show_context_menu.append(ReviewerContextMenu)
     if gc('context menu entries in editor', True):
-        addHook("EditorWebView.contextMenuEvent", EditorContextMenu)
+        gui_hooks.editor_will_show_context_menu.append(EditorContextMenu)
     if gc("make nid cid clickable", True):
         gui_hooks.card_will_show.append(nid_cid_to_hyperlink)
-addHook("profileLoaded", on_profile_loaded)
+gui_hooks.profile_did_open.append(on_profile_loaded)
