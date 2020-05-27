@@ -50,6 +50,14 @@ dddd = {
 }
 
 
+try:
+    AdvancedBrowser = __import__("874215009").advancedbrowser.core.AdvancedBrowser
+except:
+    pass
+else:
+    dddd["Browser"] = AdvancedBrowser
+
+
 def add_to_context(view, menu):
     parent = view.editor.parentWindow
     st = gc("editor context menu show cid/nid copy entries in", [])
