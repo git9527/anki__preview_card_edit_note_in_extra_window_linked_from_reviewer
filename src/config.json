@@ -17,5 +17,7 @@
         "EditCurrent",
         "EditNoteWindowFromThisLinkAddon"
     ],
-    "editor double click to open nidd/cidd": true
+    "editor double click to open nidd/cidd": true,
+    "shortcut: browser: copy nid": "",
+    "shortcut: browser: copy cid": ""
 } 
