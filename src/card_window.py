@@ -22,7 +22,6 @@ from .note_edit import external_note_dialog, EditNoteWindowFromThisLinkAddon
 class SingleCardPreviewerMod(SingleCardPreviewer):
     def _on_bridge_cmd(self, cmd):
         super()._on_bridge_cmd(cmd)
-        process_urlcmd(cmd, external_card_dialog, external_note_dialog)
 
     def _create_gui(self):
         super()._create_gui()
