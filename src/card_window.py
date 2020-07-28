@@ -1,6 +1,9 @@
+from anki.cards import Card
+from anki.lang import _
+from anki.utils import pointVersion
+
 import aqt
-from aqt.previewer import SingleCardPreviewer
-from aqt.previewer import CardListPreviewer
+from aqt.previewer import Previewer
 from aqt.qt import (
     QCheckBox,
     QDialog,
@@ -17,6 +20,43 @@ from .config import gc
 from .link_handler import process_urlcmd
 from .note_edit import external_note_dialog, EditNoteWindowFromThisLinkAddon
 
+
+
+
+if pointVersion() <= 28:
+    from aqt.previewer import SingleCardPreviewer
+else:
+    # commit 61e8611b from 2020-07-24 removed the class SingleCardPreviewer
+    # with the comment "fix lint issue in previewer, and drop unused code"
+    # see  https://github.com/ankitects/anki/commit/61e8611b7baa292c43693669fc79b7ae552e8585#diff-14b1ab9e8b1d0712f88edd6e359790a8
+    class SingleCardPreviewer(Previewer):
+        def __init__(self, card: Card, *args, **kwargs):
+            self._card = card
+            super().__init__(*args, **kwargs)
+
+        def card(self) -> Card:
+            return self._card
+
+        def _create_gui(self):
+            super()._create_gui()
+            self._other_side = self.bbox.addButton(
+                "Other side", QDialogButtonBox.ActionRole
+            )
+            self._other_side.setAutoDefault(False)
+            self._other_side.setShortcut(QKeySequence("Right"))
+            self._other_side.setShortcut(QKeySequence("Left"))
+            self._other_side.setToolTip(_("Shortcut key: Left or Right arrow"))
+            qconnect(self._other_side.clicked, self._on_other_side)
+
+        def _on_other_side(self):
+            if self._state == "question":
+                self._state = "answer"
+            else:
+                self._state = "question"
+            self.render_card()
+
+        def card_changed(self):
+           return True
 
 
 class SingleCardPreviewerMod(SingleCardPreviewer):
