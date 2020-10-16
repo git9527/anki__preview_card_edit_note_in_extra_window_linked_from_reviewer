@@ -69,8 +69,8 @@ def add_to_context(view, menu):
         return
     a = menu.addAction("Copy nid")
     a.triggered.connect(lambda _, nid=view.editor.note.id: nidcopy(nid))
-    if not isinstance(parent, Browser):
-        return
+    # if not isinstance(parent, Browser):
+    #     return
     a = menu.addAction("Copy cid")
     a.triggered.connect(lambda _, cid=parent.card.id: cidcopy(cid))
 gui_hooks.editor_will_show_context_menu.append(add_to_context)
