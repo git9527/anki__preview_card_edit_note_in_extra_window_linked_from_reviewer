@@ -43,9 +43,9 @@ def js_inserter_after_load(self):
 
 
 dddd = {
-    "AddCards": AddCards,
+    # "AddCards": AddCards,  # never worked for cids, doesn't work for nids in 2.1.28+
     "Browser": Browser,
-    "EditCurrent": EditCurrent,       
+    "EditCurrent": EditCurrent,  # doesn't hold card/cid
     "EditNoteWindowFromThisLinkAddon": EditNoteWindowFromThisLinkAddon,
 }
 
@@ -60,17 +60,15 @@ else:
 
 def add_to_context(view, menu):
     parent = view.editor.parentWindow
-    st = gc("editor context menu show cid/nid copy entries in", [])
+    st = gc("editor context menu show note-id (nid) copy entries in", [])
     cs = []
     for entry in st:
         cs.append(dddd.get(entry))
     showin = tuple(cs)
-    if not isinstance(parent, showin):
-        return
-    a = menu.addAction("Copy nid")
-    a.triggered.connect(lambda _, nid=view.editor.note.id: nidcopy(nid))
-    # if not isinstance(parent, Browser):
-    #     return
-    a = menu.addAction("Copy cid")
-    a.triggered.connect(lambda _, cid=parent.card.id: cidcopy(cid))
+    if isinstance(parent, showin):
+        a = menu.addAction("Copy nid")
+        a.triggered.connect(lambda _, nid=view.editor.note.id: nidcopy(nid))
+    if isinstance(parent, Browser) and gc("editor context menu show card-id (cid) copy entries in Browser"):
+        a = menu.addAction("Copy cid")
+        a.triggered.connect(lambda _, cid=parent.card.id: cidcopy(cid))
 gui_hooks.editor_will_show_context_menu.append(add_to_context)

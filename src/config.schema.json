@@ -52,14 +52,19 @@
             "default": true,
             "description": ""
         },
-        "editor context menu show cid/nid copy entries in": {
+        "editor context menu show card-id (cid) copy entries in Browser": {
+            "type": "boolean",
+            "default": true,
+            "description": ""
+        },
+        "editor context menu show note-id (nid) copy entries in": {
             "type": "array",
             "items": {
                 "type": "string",
                 "enum": [
-                    "AddCards",
                     "Browser",
-                    "EditCurrent", "EditNoteWindowFromThisLinkAddon"
+                    "EditCurrent", 
+                    "EditNoteWindowFromThisLinkAddon"
                 ]
             }
         }
