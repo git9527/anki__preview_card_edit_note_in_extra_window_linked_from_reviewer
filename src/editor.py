@@ -64,8 +64,8 @@ def add_to_context(view, menu):
     cs = []
     for entry in st:
         cs.append(dddd.get(entry))
-    showin = tuple(cs)
-    if isinstance(parent, showin):
+    nid_showin = tuple(cs)
+    if isinstance(parent, nid_showin):
         a = menu.addAction("Copy nid")
         a.triggered.connect(lambda _, nid=view.editor.note.id: nidcopy(nid))
     if isinstance(parent, Browser) and gc("editor context menu show card-id (cid) copy entries in Browser"):
