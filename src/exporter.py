@@ -19,6 +19,7 @@ def write_to_file(txt, filename):
 
 
 def text_for_card(cid):
+    cid = int(cid)
     c = mw.col.getCard(cid)
     if gc("linked_cards_show_answer", True):
         txt = c.a()
