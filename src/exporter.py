@@ -1,3 +1,4 @@
+import io
 import re
 
 from anki.hooks import (
@@ -14,7 +15,7 @@ from .config import gc
 
 
 def write_to_file(txt, filename):
-    with open(filename, "w") as f:
+    with io.open(filename, "w", encoding="utf-8") as f:
         f.write(txt)
 
 
