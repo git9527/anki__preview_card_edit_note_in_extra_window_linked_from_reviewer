@@ -38,7 +38,7 @@ def text_for_card(cid):
 def text_for_note(nid):
     # TODO maybe return special card?
     try:
-        note = mw.col.getNote(nid)
+        note = mw.col.getNote(int(nid))
     except:
         return
     else:
@@ -66,7 +66,7 @@ def extract_linked_ids_from_field_content(iscid, notelist):
         regex = r"""(?<=%s)(\d{13})""" % gc("prefix_nid", "nidd")
     ro = re.compile(regex)
     for nid in notelist:
-        note = mw.col.getNote(nid)
+        note = mw.col.getNote(int(nid))
         for f in note.fields:
             mo = ro.search(f)
             if mo:
