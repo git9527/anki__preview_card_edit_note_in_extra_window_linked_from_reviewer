@@ -75,7 +75,7 @@ class MyEditor(aqt.editor.Editor):
 class EditNoteWindowFromThisLinkAddon(QDialog):
 
     def __init__(self, mw, note):
-        QDialog.__init__(self, None, Qt.Window)
+        QDialog.__init__(self, None, Qt.WindowType.Window)
         mw.setupDialogGC(self)
         self.mw = mw
         self.form = aqt.forms.editcurrent.Ui_Dialog()
@@ -83,7 +83,7 @@ class EditNoteWindowFromThisLinkAddon(QDialog):
         self.setWindowTitle(_("Anki: Edit underlying note (add-on window)"))
         self.setMinimumHeight(400)
         self.setMinimumWidth(250)
-        self.form.buttonBox.button(QDialogButtonBox.Close).setShortcut(
+        self.form.buttonBox.button(QDialogButtonBox.StandardButton.Close).setShortcut(
                 QKeySequence("Ctrl+Return"))
         if False: # gc("when editing note externally - no reset"):
             self.editor = MyEditor(self.mw, self.form.fieldsArea, self)

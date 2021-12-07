@@ -40,7 +40,7 @@ else:
         def _create_gui(self):
             super()._create_gui()
             self._other_side = self.bbox.addButton(
-                "Other side", QDialogButtonBox.ActionRole
+                "Other side", QDialogButtonBox.ButtonRole.ActionRole
             )
             self._other_side.setAutoDefault(False)
             self._other_side.setShortcut(QKeySequence("Right"))
@@ -75,7 +75,7 @@ class SingleCardPreviewerMod(SingleCardPreviewer):
         self.browser_button.clicked.connect(self._on_browser_button)
         self.bottombar.addWidget(self.browser_button)
 
-        self.edit_button = self.bbox.addButton("edit", QDialogButtonBox.HelpRole)
+        self.edit_button = self.bbox.addButton("edit", QDialogButtonBox.ButtonRole.HelpRole)
         #self.edit_button.setShortcut(QKeySequence("e"))
         #self.edit_button.setToolTip("Shortcut key: %s" % "e")
         self.edit_button.clicked.connect(self._on_edit_button)
