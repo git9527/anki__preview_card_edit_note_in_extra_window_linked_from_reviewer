@@ -4,20 +4,16 @@
 #     License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 # (this mod is copyright 2019 ijgnd)
 
+import unicodedata
+
 from aqt import gui_hooks
 from aqt.qt import *
 from aqt.utils import tooltip
 import aqt.editor
 from aqt import mw
 from aqt.utils import saveGeom, restoreGeom
-from anki.hooks import addHook, remHook, runHook, runFilter
-from anki.utils import isMac
 
 from .config import gc
-
-import urllib
-import unicodedata
-
 
 class MyEditor(aqt.editor.Editor):
 
