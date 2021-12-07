@@ -1,5 +1,6 @@
+from .config import gc, my_point_version
+
 from anki.cards import Card
-from anki.utils import pointVersion
 
 import aqt
 from aqt.previewer import Previewer
@@ -14,15 +15,13 @@ from aqt.qt import (
 )
 from aqt.utils import tooltip
 
-
-from .config import gc
 from .link_handler import process_urlcmd
 from .note_edit import external_note_dialog, EditNoteWindowFromThisLinkAddon
 
 
 
 
-if pointVersion() <= 28:
+if my_point_version() <= 28:
     from aqt.previewer import SingleCardPreviewer
 else:
     # commit 61e8611b from 2020-07-24 removed the class SingleCardPreviewer
@@ -104,7 +103,11 @@ class SingleCardPreviewerMod(SingleCardPreviewer):
         if gc("card_preview__default_is_answer"):
             showboth ^= True
         overrides = gc("card_preview__override_toggle_from_default_for_notetypes")
-        if self.card().model()['name'] in overrides:
+        if my_point_version() <= 49:
+            name = self.card().model()['name']
+        else:
+            name = self.card().note_type()['name']
+        if name in overrides:
             showboth ^= True
         return showboth
 

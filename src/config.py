@@ -11,3 +11,11 @@ def gc(arg, fail=False):
 
 pycmd_card = gc("prefix_cid")  # "card_in_extra_window"
 pycmd_nid = gc("prefix_nid")  # "note_in_extra_window"
+
+
+from anki.utils import pointVersion
+if pointVersion() <= 49:
+    my_point_version = pointVersion
+else:
+    from anki.utils import point_version
+    my_point_version = point_version
