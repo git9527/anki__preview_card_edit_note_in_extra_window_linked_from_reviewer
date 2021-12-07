@@ -1,5 +1,4 @@
 from anki.cards import Card
-from anki.lang import _
 from anki.utils import pointVersion
 
 import aqt
@@ -45,7 +44,7 @@ else:
             self._other_side.setAutoDefault(False)
             self._other_side.setShortcut(QKeySequence("Right"))
             self._other_side.setShortcut(QKeySequence("Left"))
-            self._other_side.setToolTip(_("Shortcut key: Left or Right arrow"))
+            self._other_side.setToolTip("Shortcut key: Left or Right arrow")
             qconnect(self._other_side.clicked, self._on_other_side)
 
         def _on_other_side(self):

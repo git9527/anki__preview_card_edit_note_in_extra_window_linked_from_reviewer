@@ -12,7 +12,6 @@ from aqt import mw
 from aqt.utils import saveGeom, restoreGeom
 from anki.hooks import addHook, remHook, runHook, runFilter
 from anki.utils import isMac
-from anki.lang import _
 
 from .config import gc
 
@@ -80,7 +79,7 @@ class EditNoteWindowFromThisLinkAddon(QDialog):
         self.mw = mw
         self.form = aqt.forms.editcurrent.Ui_Dialog()
         self.form.setupUi(self)
-        self.setWindowTitle(_("Anki: Edit underlying note (add-on window)"))
+        self.setWindowTitle("Anki: Edit underlying note (add-on window)")
         self.setMinimumHeight(400)
         self.setMinimumWidth(250)
         self.form.buttonBox.button(QDialogButtonBox.StandardButton.Close).setShortcut(
