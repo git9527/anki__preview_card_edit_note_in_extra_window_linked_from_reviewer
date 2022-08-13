@@ -4,7 +4,7 @@ from aqt.browser import Browser
 from aqt.editcurrent import EditCurrent
 from aqt.editor import Editor
 
-from .anki_version_detection import anki_21_version
+from .anki_version_detection import anki_point_version
 from .config import gc
 from .nidcidcopy import cidcopy, nidcopy
 from .note_edit import EditNoteWindowFromThisLinkAddon
@@ -54,7 +54,7 @@ dddd = {
 # Advanced Browser since .45 (the anki version that merged rumo's browser rewrite) AB no longer
 # overwrites Browser but patches it - see the commits after 
 # https://github.com/ankipalace/advanced-browser/commit/01cb415ab42da01d2ca36a75a503ce1607fea59f )
-if anki_21_version <= 44:
+if anki_point_version <= 44:
     try:
         AdvancedBrowser = __import__("874215009").advancedbrowser.core.AdvancedBrowser
     except:

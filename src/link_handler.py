@@ -2,7 +2,7 @@ import aqt
 from aqt import mw
 from aqt.utils import tooltip
 
-from .anki_version_detection import anki_21_version
+from .anki_version_detection import anki_point_version
 from .config import gc, pycmd_card, pycmd_nid
 
 
@@ -11,7 +11,7 @@ def process_urlcmd(url, external_card_dialog, external_note_dialog):
     if url.startswith(pycmd_card):
         cid = url.lstrip(pycmd_card)
         try:
-            card = mw.col.getCard(int(cid)) if anki_21_version <= 49 else mw.col.get_card(int(cid))
+            card = mw.col.getCard(int(cid)) if anki_point_version <= 49 else mw.col.get_card(int(cid))
         except:
             tooltip('card with cid "%s" does not exist. Aborting ...' % str(cid))
         else:
@@ -20,7 +20,7 @@ def process_urlcmd(url, external_card_dialog, external_note_dialog):
     elif url.startswith(pycmd_nid):
         nid = url.lstrip(pycmd_nid)
         try:
-            note = mw.col.getNote(int(nid)) if anki_21_version <= 49 else mw.col.get_note(int(nid))
+            note = mw.col.getNote(int(nid)) if anki_point_version <= 49 else mw.col.get_note(int(nid))
         except:
             tooltip('Note with nid "%s" does not exist. Aborting ...' % str(nid))
         else:
