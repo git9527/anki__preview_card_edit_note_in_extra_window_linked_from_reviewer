@@ -7,7 +7,7 @@ from aqt.editor import Editor
 from .anki_version_detection import anki_point_version
 from .config import gc
 from .nidcidcopy import cidcopy, nidcopy
-from .note_edit import EditNoteWindowFromThisLinkAddon
+
 
 
 def append_js_to_Editor(web_content, context):
@@ -47,8 +47,13 @@ dddd = {
     # "AddCards": AddCards,  # never worked for cids, doesn't work for nids in 2.1.28+
     "Browser": Browser,
     "EditCurrent": EditCurrent,  # doesn't hold card/cid
-    "EditNoteWindowFromThisLinkAddon": EditNoteWindowFromThisLinkAddon,
 }
+if anki_point_version <= 49:
+    from .note_edit import EditNoteWindowFromThisLinkAddonUpTo49
+    dddd["EditNoteWindowFromThisLinkAddon"] = EditNoteWindowFromThisLinkAddonUpTo49
+else:
+    from .note_edit import EditCurrentModFor50Plus
+    dddd["EditCurrentModFor50Plus"] = EditCurrentModFor50Plus
 
 
 # Advanced Browser since .45 (the anki version that merged rumo's browser rewrite) AB no longer

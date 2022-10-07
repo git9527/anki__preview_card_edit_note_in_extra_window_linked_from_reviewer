@@ -4,6 +4,7 @@ from aqt.gui_hooks import webview_will_show_context_menu
 import aqt
 from aqt.qt import *
 
+from .card_window import SingleCardPreviewerMod 
 from .nidcidcopy import cidcopy, nidcopy
 
 
@@ -35,7 +36,7 @@ def reviewer_previewer_context_menu(webview, menu):
 
     # webview.title == previewer might be dangerous since some classes in the previewer
     # don't have the method card()
-    if isinstance(parent, aqt.browser.previewer.BrowserPreviewer):
+    if isinstance(parent, (aqt.browser.previewer.BrowserPreviewer,SingleCardPreviewerMod)):
         menutext = "Copy nid"
         action_nid = menu.addAction(menutext)
         qconnect(action_nid.triggered, lambda _, v=webview,p=parent:shortcut_helper_nid__browser_previewer(v,p))

@@ -15,6 +15,7 @@
     ],
     "editor double click to open nidd/cidd": true,
     "linked_cards_show_answer": true,
+    "nid link open in browser": false,
     "prefix_nid": "nidd",
     "prefix_cid": "cidd",
     "review, preview: make nid cid clickable": true,
