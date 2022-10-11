@@ -81,11 +81,11 @@ def process_selectedtext(text, iscard):
 
 def actually_transform(txt):
     pattern = "(%s)(\\d{13})" % gc("prefix_cid", "cidd")
-    repl = """<a href='javascript:pycmd(`%s\\2`);'>\\1\\2</a>""" % pycmd_card
+    repl = """<a href='javascript:pycmd(\`%s\\2\`);'>\\1\\2</a>""" % pycmd_card
     txt = re.sub(pattern, repl, txt)
     if gc("edit note externally"):
         pattern = "(%s)(\\d{13})" % gc("prefix_nid", "nidd")
-        repl = """<a href='javascript:pycmd(`%s\\2`);'>\\1\\2</a>""" % pycmd_nid
+        repl = """<a href='javascript:pycmd(\`%s\\2\`);'>\\1\\2</a>""" % pycmd_nid
         txt = re.sub(pattern, repl, txt)
     return txt
 
