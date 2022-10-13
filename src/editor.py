@@ -53,7 +53,7 @@ if anki_point_version <= 49:
     dddd["EditNoteWindowFromThisLinkAddon"] = EditNoteWindowFromThisLinkAddonUpTo49
 else:
     from .note_edit import EditCurrentModFor50Plus
-    dddd["EditCurrentModFor50Plus"] = EditCurrentModFor50Plus
+    dddd["EditNoteWindowFromThisLinkAddon"] = EditCurrentModFor50Plus
 
 
 # Advanced Browser since .45 (the anki version that merged rumo's browser rewrite) AB no longer
@@ -74,6 +74,8 @@ def add_to_context(view, menu):
     cs = []
     for entry in st:
         cs.append(dddd.get(entry))
+    # if there's something invalid in the config dddd.get() might return None which breaks isinstance
+    cs = [e for e in cs if e is not None]
     nid_showin = tuple(cs)
     if isinstance(parent, nid_showin):
         a = menu.addAction("Copy nid")
