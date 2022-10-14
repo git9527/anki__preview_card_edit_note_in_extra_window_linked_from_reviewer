@@ -20,5 +20,6 @@
     "prefix_cid": "cidd",
     "review, preview: make nid cid clickable": true,
     "shortcut: browser: copy nid": "",
-    "shortcut: browser: copy cid": ""
+    "shortcut: browser: copy cid": "",
+    "transform quoted for these notetypes": []
 } 
