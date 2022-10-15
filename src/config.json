@@ -1,16 +1,12 @@
 {
+    "browser_table_add_prefix_when_copying": true,
     "card_preview__default_is_answer": true,
     "card_preview__override_toggle_from_default_for_notetypes": [
         "IR3"
     ],
-    "edit note externally": true,
-    "browser_table_add_prefix_when_copying": true,
-    "linked_cards_show_answer": true,
-    "make nid cid clickable": true,
-    "prefix_nid": "nidd",
-    "prefix_cid": "cidd",
-    "context menu entries in reviewer": true,
     "context menu entries in editor": true,
+    "context menu entries in reviewer": true,
+    "edit note externally": true,
     "editor context menu show card-id (cid) copy entries in Browser": true,
     "editor context menu show note-id (nid) copy entries in": [
         "Browser",
@@ -18,6 +14,12 @@
         "EditNoteWindowFromThisLinkAddon"
     ],
     "editor double click to open nidd/cidd": true,
+    "linked_cards_show_answer": true,
+    "nid link open in browser": false,
+    "prefix_nid": "nidd",
+    "prefix_cid": "cidd",
+    "review, preview: make nid cid clickable": true,
     "shortcut: browser: copy nid": "",
-    "shortcut: browser: copy cid": ""
+    "shortcut: browser: copy cid": "",
+    "transform quoted for these notetypes": []
 } 

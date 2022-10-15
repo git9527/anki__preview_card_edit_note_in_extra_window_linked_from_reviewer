@@ -27,7 +27,7 @@
             "default": true,
             "description": ""
         },
-        "make nid cid clickable": {
+        "review, preview: make nid cid clickable": {
             "type": "boolean",
             "default": true,
             "description": ""

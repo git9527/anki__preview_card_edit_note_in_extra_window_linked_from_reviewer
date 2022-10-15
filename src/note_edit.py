@@ -13,9 +13,10 @@ import aqt.editor
 from aqt import mw
 from aqt.utils import saveGeom, restoreGeom
 
+from .anki_version_detection import anki_point_version
 from .config import gc
 
-class MyEditor(aqt.editor.Editor):
+class MyEditorUpTo49(aqt.editor.Editor):
 
     # no requireRest
     def onBridgeCmd(self, cmd):
@@ -67,7 +68,7 @@ class MyEditor(aqt.editor.Editor):
             print("uncaught cmd", cmd)
 
 
-class EditNoteWindowFromThisLinkAddon(QDialog):
+class EditNoteWindowFromThisLinkAddonUpTo49(QDialog):
 
     def __init__(self, mw, note):
         QDialog.__init__(self, None, Qt.WindowType.Window)
@@ -81,7 +82,7 @@ class EditNoteWindowFromThisLinkAddon(QDialog):
         self.form.buttonBox.button(QDialogButtonBox.StandardButton.Close).setShortcut(
                 QKeySequence("Ctrl+Return"))
         if False: # gc("when editing note externally - no reset"):
-            self.editor = MyEditor(self.mw, self.form.fieldsArea, self)
+            self.editor = MyEditorUpTo49(self.mw, self.form.fieldsArea, self)
         else:
             self.editor = aqt.editor.Editor(self.mw, self.form.fieldsArea, self)
         self.editor.setNote(note, focusTo=0)
@@ -123,6 +124,73 @@ class EditNoteWindowFromThisLinkAddon(QDialog):
         self.editor.saveNow(callback)
  
 
-def external_note_dialog(nid):
-    d = EditNoteWindowFromThisLinkAddon(mw, nid)
-    d.show()
+
+
+
+
+if anki_point_version >= 50:
+    from aqt.editcurrent import EditCurrent
+    from aqt.utils import disable_help_button, tr
+
+    class EditCurrentModFor50Plus(EditCurrent):
+        # It should be possible to use EditCurrent when removing all
+        # references to mw.reviewer. These are in only two methods
+        # so I overwrite those.
+
+        # copied over from editcurrent.EditCurrent.__init__ as
+        # of anki commit 9d6cd4cd7 2022-10-06
+        # should be unchanged since Anki 2.1.50
+        def __init__(self, mw: aqt.AnkiQt, note) -> None:
+            QDialog.__init__(self, None, Qt.WindowType.Window)
+            mw.garbage_collect_on_dialog_finish(self)
+            self.mw = mw
+            self.form = aqt.forms.editcurrent.Ui_Dialog()
+            self.form.setupUi(self)
+            ### change
+            #self.setWindowTitle(tr.editing_edit_current())
+            self.setWindowTitle("Anki Add-on: show linked note")
+            disable_help_button(self)
+            self.setMinimumHeight(400)
+            self.setMinimumWidth(250)
+            self.form.buttonBox.button(QDialogButtonBox.StandardButton.Close).setShortcut(
+                QKeySequence("Ctrl+Return")
+            )
+            self.editor = aqt.editor.Editor(
+                self.mw,
+                self.form.fieldsArea,
+                self,
+                editor_mode=aqt.editor.EditorMode.EDIT_CURRENT,
+            )
+            ### change
+            # self.editor.card = self.mw.reviewer.card
+            # self.editor.set_note(self.mw.reviewer.card.note(), focusTo=0)
+            self.editor.card = None
+            self.editor.set_note(note, focusTo=0)    
+            ### change end
+            restoreGeom(self, "editcurrent")
+            gui_hooks.operation_did_execute.append(self.on_operation_did_execute)
+            ### change
+            # self.show()
+
+        def reopen(self, mw: aqt.AnkiQt) -> None:
+            # if card := self.mw.reviewer.card:
+            #    self.editor.set_note(card.note())
+            pass
+
+
+
+
+if gc("nid link open in browser"):
+    def external_note_dialog(note):
+        browser = aqt.dialogs.open("Browser", mw)
+        browser.form.searchEdit.lineEdit().setText(f"nid:{note.id}")
+        browser.onSearchActivated()
+else:
+    if anki_point_version <= 49:
+        def external_note_dialog(note):
+            d = EditNoteWindowFromThisLinkAddonUpTo49(mw, note)
+            d.show()
+    else:
+        def external_note_dialog(note):
+            d = EditCurrentModFor50Plus(mw, note)
+            d.show()

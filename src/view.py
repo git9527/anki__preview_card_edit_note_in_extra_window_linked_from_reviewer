@@ -79,14 +79,28 @@ def process_selectedtext(text, iscard):
             return True
 
 
-def actually_transform(txt):
-    pattern = "(%s)(\\d{13})" % gc("prefix_cid", "cidd")
-    repl = """<a href='javascript:pycmd(\`%s\\2\`);'>\\1\\2</a>""" % pycmd_card
-    txt = re.sub(pattern, repl, txt)
+def should_quote_this_model(model_dict):
+    for element in gc("transform quoted for these notetypes"):
+        if element in (model_dict['name'], str(model_dict['id']), model_dict['id']):
+            return True
+
+
+def get_pattern(key, default):
+    return "(%s)(\\d{13})" % gc(key, default)
+
+
+def get_repl(cmd, quoted=False):
+    if quoted:
+        return """<a href='javascript:pycmd(\`%s\\2\`);'>\\1\\2</a>""" % cmd
+    else:
+        return """<a href='javascript:pycmd(`%s\\2`);'>\\1\\2</a>""" % cmd
+
+
+def actually_transform(txt, card):
+    quoted = should_quote_this_model(card.note().note_type())
+    txt = re.sub(get_pattern("prefix_cid", "cidd"), get_repl(pycmd_card, quoted), txt)
     if gc("edit note externally"):
-        pattern = "(%s)(\\d{13})" % gc("prefix_nid", "nidd")
-        repl = """<a href='javascript:pycmd(\`%s\\2\`);'>\\1\\2</a>""" % pycmd_nid
-        txt = re.sub(pattern, repl, txt)
+        txt = re.sub(get_pattern("prefix_nid", "nidd"), get_repl(pycmd_nid, quoted), txt)
     return txt
 
 
@@ -99,7 +113,7 @@ def nid_cid_to_hyperlink(text, card, kind):
         "clayoutQuestion",
         "clayoutAnswer",
     ]:
-        return actually_transform(text)
+        return actually_transform(text, card)
     else:
         return text
 
@@ -115,6 +129,6 @@ def on_profile_loaded():
         gui_hooks.webview_will_show_context_menu.append(ReviewerContextMenu)
     if gc('context menu entries in editor', True):
         gui_hooks.editor_will_show_context_menu.append(EditorContextMenu)
-    if gc("make nid cid clickable", True):
+    if gc("review, preview: make nid cid clickable", True):
         gui_hooks.card_will_show.append(nid_cid_to_hyperlink)
 gui_hooks.profile_did_open.append(on_profile_loaded)

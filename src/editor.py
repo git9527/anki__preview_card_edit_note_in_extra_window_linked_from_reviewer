@@ -4,9 +4,10 @@ from aqt.browser import Browser
 from aqt.editcurrent import EditCurrent
 from aqt.editor import Editor
 
+from .anki_version_detection import anki_point_version
 from .config import gc
 from .nidcidcopy import cidcopy, nidcopy
-from .note_edit import EditNoteWindowFromThisLinkAddon
+
 
 
 def append_js_to_Editor(web_content, context):
@@ -46,16 +47,25 @@ dddd = {
     # "AddCards": AddCards,  # never worked for cids, doesn't work for nids in 2.1.28+
     "Browser": Browser,
     "EditCurrent": EditCurrent,  # doesn't hold card/cid
-    "EditNoteWindowFromThisLinkAddon": EditNoteWindowFromThisLinkAddon,
 }
-
-
-try:
-    AdvancedBrowser = __import__("874215009").advancedbrowser.core.AdvancedBrowser
-except:
-    pass
+if anki_point_version <= 49:
+    from .note_edit import EditNoteWindowFromThisLinkAddonUpTo49
+    dddd["EditNoteWindowFromThisLinkAddon"] = EditNoteWindowFromThisLinkAddonUpTo49
 else:
-    dddd["Browser"] = AdvancedBrowser
+    from .note_edit import EditCurrentModFor50Plus
+    dddd["EditNoteWindowFromThisLinkAddon"] = EditCurrentModFor50Plus
+
+
+# Advanced Browser since .45 (the anki version that merged rumo's browser rewrite) AB no longer
+# overwrites Browser but patches it - see the commits after 
+# https://github.com/ankipalace/advanced-browser/commit/01cb415ab42da01d2ca36a75a503ce1607fea59f )
+if anki_point_version <= 44:
+    try:
+        AdvancedBrowser = __import__("874215009").advancedbrowser.core.AdvancedBrowser
+    except:
+        pass
+    else:
+        dddd["Browser"] = AdvancedBrowser
 
 
 def add_to_context(view, menu):
@@ -64,6 +74,8 @@ def add_to_context(view, menu):
     cs = []
     for entry in st:
         cs.append(dddd.get(entry))
+    # if there's something invalid in the config dddd.get() might return None which breaks isinstance
+    cs = [e for e in cs if e is not None]
     nid_showin = tuple(cs)
     if isinstance(parent, nid_showin):
         a = menu.addAction("Copy nid")

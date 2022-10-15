@@ -1,4 +1,5 @@
-from .config import gc, my_point_version
+from .anki_version_detection import anki_point_version
+from .config import gc
 
 from anki.cards import Card
 
@@ -16,12 +17,12 @@ from aqt.qt import (
 from aqt.utils import tooltip
 
 from .link_handler import process_urlcmd
-from .note_edit import external_note_dialog, EditNoteWindowFromThisLinkAddon
+from .note_edit import external_note_dialog
 
 
 
 
-if my_point_version() <= 28:
+if anki_point_version <= 28:
     from aqt.previewer import SingleCardPreviewer
 else:
     # commit 61e8611b from 2020-07-24 removed the class SingleCardPreviewer
@@ -103,7 +104,7 @@ class SingleCardPreviewerMod(SingleCardPreviewer):
         if gc("card_preview__default_is_answer"):
             showboth ^= True
         overrides = gc("card_preview__override_toggle_from_default_for_notetypes")
-        if my_point_version() <= 49:
+        if anki_point_version <= 49:
             name = self.card().model()['name']
         else:
             name = self.card().note_type()['name']
@@ -120,8 +121,7 @@ class SingleCardPreviewerMod(SingleCardPreviewer):
 
     def _on_edit_button(self):
         note = self.mw.col.getNote(self.card().nid)
-        d = EditNoteWindowFromThisLinkAddon(self.mw, note)
-        d.show()
+        external_note_dialog(note)
         QDialog.reject(self)
 
     def onShowRatingBar(self):
